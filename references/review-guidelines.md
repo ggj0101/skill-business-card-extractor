@@ -13,5 +13,13 @@ Use this file when deciding how cautious to be.
 - For extensions, keep digits only when confident.
 - Keep addresses in original language.
 
+## CSV / Excel handling notes
+These are *export-time* behaviors for review CSVs that will be opened in Excel.
+
+- **Encoding**: write files as UTF-8 with BOM (`utf-8-sig`) to avoid garbled Chinese/Japanese text in Excel.
+- **Prevent phone-as-formula**: Excel may parse values beginning with `=`, `+`, `-`, `@` as formulas (e.g. `+886...`).
+	- For `mobile`, `phone`, `phone_ext`, `fax`, `tax_id`, prefix a single quote (`'`) when exporting.
+	- This also helps preserve leading zeros.
+
 ## Ambiguity policy
 If two interpretations are plausible, prefer empty cell plus a note over selecting one without evidence.

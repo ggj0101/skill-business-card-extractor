@@ -23,6 +23,25 @@ Always keep this column order:
 source_file,record_id,name,company,title,mobile,phone,phone_ext,fax,email,address,website,tax_id,country,language_detected,confidence,review_status,notes
 ```
 
+## CSV / Excel safety
+The CSV is often opened in Microsoft Excel, which has two common pitfalls:
+
+1) **Garbled text (mojibake)**
+  - When writing a real `.csv` file to disk, output **UTF-8 with BOM** (a.k.a. `utf-8-sig`). Excel on Windows commonly relies on the BOM to auto-detect UTF-8.
+  - Keep the CSV content itself plain text; do not base64 or escape the whole file.
+
+2) **Formula interpretation / auto-conversion in Excel**
+  - Excel may treat cells starting with `=`, `+`, `-`, or `@` as formulas. This can happen for phone numbers like `+886...`.
+  - Excel may also auto-convert numeric-looking strings (drop leading zeros, switch to scientific notation).
+  - To make review CSV safer in Excel, **force text output** for these columns by prefixing a single quote (`'`) in the cell value:
+    - `mobile`, `phone`, `phone_ext`, `fax`, `tax_id`
+  - Only add the leading `'` at export time. Do not otherwise change the printed value; keep punctuation/spacing as printed.
+
+3) **Delimiter / quoting (for file generation)**
+  - Use comma `,` as delimiter and always include the header row.
+  - Quote fields only when needed (commas, quotes, or newlines inside). If a value contains a double quote `"`, escape it per CSV rules.
+  - Use consistent line endings within the file (`\n` is fine). Ensure there is a trailing newline at EOF.
+
 ### Field rules
 - `source_file`: original filename if available; otherwise use a stable label such as `card_001`.
 - `record_id`: deterministic row id such as `BC-0001`, `BC-0002`.
